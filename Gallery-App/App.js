@@ -4,11 +4,34 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import CameraPicker from './components/CameraPicker';
 import SavedImageDisplay from './components/SavedImageDisplay';
+import MapsLibrary from './components/MapsLibrary';
 
 export default function App() {
 
   const [imageUri, setImageUri] = useState(null); 
   const [filePath, setFilePath] = useState(null); 
+
+
+  const saveImageToFileSystem = async (imageUri) => {
+    try {
+      const fileName = imageUri.split('/').pop(); 
+      const savedPath = `${FileSystem.documentDirectory}${fileName}`; 
+
+      await FileSystem.copyAsync({
+        from: imageUri,
+        to: savedPath,
+      });
+
+      console.log('Image saved to:', savedPath);
+      return savedPath; 
+    } catch (error) {
+      console.error('Failed to save image:', error);
+      throw error;
+    }
+  };
+
+
+  
 
   const handleImageCapture = async (uri) => {
     try {
@@ -20,12 +43,16 @@ export default function App() {
     }
   };
 
+  
+
 
   return (
     <View style={styles.container}>
 <Text style={styles.title}>React Native Image Picker</Text>
       <CameraPicker onImageCapture={handleImageCapture} />
       <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
+      <MapsLibrary />
+     
     </View>
   );
 }
