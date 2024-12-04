@@ -6,13 +6,14 @@ import CameraPicker from './components/CameraPicker';
 import SavedImageDisplay from './components/SavedImageDisplay';
 import MapsLibrary from './components/MapsLibrary';
 import ImageList from './components/ImageList';
+
 export default function App() {
 
   const [imageUri, setImageUri] = useState(null);
   const [filePath, setFilePath] = useState(null);
   const [location, setLocation] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
-
+  const [showAllImages, setShowAllImages] = useState(false); 
 
   const saveImageToFileSystem = async (imageUri) => {
     try {
@@ -32,31 +33,55 @@ export default function App() {
     }
   };
 
+  const handleImageCapture = async (imageData) => {
+    
 
-  const handleImageCapture = async (uri) => {
-    try {
+      const {uri,location} = imageData;
+      console.log('Captured Image Data:',uri, location);
+
+
+      try {
       const savedPath = await saveImageToFileSystem(uri);
       const newImage = { uri: savedPath, location };
-      setSavedImages([...savedImages, newImage]);
+      console.log('New Image Saved:', newImage); 
+
+
+      setSavedImages((prevImages) => [...savedImages, newImage]);
       setImageUri(savedPath);
       setFilePath(savedPath);
-      setLocation(Location);
+      setLocation(location);
     } catch (error) {
       console.error('Failed to save image:', error);
     }
   };
 
+  const toggleImageVisibility = () => {
+    setShowAllImages((prevState) => !prevState);
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>React Native Image Picker</Text>
       <CameraPicker onImageCapture={handleImageCapture} />
       <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
-      {location && <MapsLibrary location={location} />}
-      <Button title="View All Images with Locations" onPress={() => setImageUri('')}
+      {location ? 
+      ( <MapsLibrary location={location} /> 
 
-      /> <ImageList images={savedImages} />
-    </View>
+      ) : (
+         <Text>No location data available.</Text> 
+         )}
+
+      <Button
+        title={showAllImages ? "Hide All Images" : "View All Images with Locations"}
+        onPress={toggleImageVisibility} 
+      />
+      {showAllImages && savedImages.length > 0 ? (
+        <ImageList images={savedImages} />
+      ) : (
+        savedImages.length === 0 && <Text>No images available.</Text>
+      )}
+
+      </View>
   );
 }
 
