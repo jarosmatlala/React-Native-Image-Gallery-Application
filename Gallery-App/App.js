@@ -14,6 +14,7 @@ export default function App() {
   const [location, setLocation] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
   const [showAllImages, setShowAllImages] = useState(false); 
+  
 
   const saveImageToFileSystem = async (imageUri) => {
     try {
@@ -34,8 +35,6 @@ export default function App() {
   };
 
   const handleImageCapture = async (imageData) => {
-    
-
       const {uri,location} = imageData;
       console.log('Captured Image Data:',uri, location);
 
@@ -46,7 +45,12 @@ export default function App() {
       console.log('New Image Saved:', newImage); 
 
 
-      setSavedImages((prevImages) => [...savedImages, newImage]);
+      setSavedImages((prevImages) => {
+        const updatedImages = [...prevImages, newImage];
+        console.log('Updated Saved Images:', updatedImages); 
+        return updatedImages;
+      });
+
       setImageUri(savedPath);
       setFilePath(savedPath);
       setLocation(location);
@@ -64,8 +68,8 @@ export default function App() {
       <Text style={styles.title}>React Native Image Picker</Text>
       <CameraPicker onImageCapture={handleImageCapture} />
       <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
-      {location ? 
-      ( <MapsLibrary location={location} /> 
+      {location ?(
+        <MapsLibrary location={location} /> 
 
       ) : (
          <Text>No location data available.</Text> 

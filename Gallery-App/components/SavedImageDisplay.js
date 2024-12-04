@@ -2,7 +2,9 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 const SavedImageDisplay = ({ imageUri, filePath }) => {
-  if (!imageUri || !filePath) return null;
+  if (!imageUri || !filePath) {
+    return <Text style={styles.text}>No image or file path available.</Text>;
+}
 
   return (
     <View style={styles.container}>
@@ -11,6 +13,7 @@ const SavedImageDisplay = ({ imageUri, filePath }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +31,11 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'center'
   },
+  text: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  }
 });
 
 export default SavedImageDisplay;

@@ -5,31 +5,36 @@ import MapView, { Marker } from "react-native-maps";
 
 
 export default function MapsLibrary({ location }) {
+  if (!location || !location.latitude || !location.longitude){
+    return <Text style={styles.text}>No location data available.</Text>;  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Google Maps</Text>
-      {location ? (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-        >
-      <Marker
-        coordinate={{
+       <MapView
+        style={styles.map}
+        initialRegion={{
           latitude: location.latitude,
           longitude: location.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
-        title="Image Location"
-      />
-    </MapView>
-  ) : (
-    <Text style={styles.text}>No location data available.</Text>
-  )}
-    </View >
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+      >
+        <Marker
+          coordinate={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }}
+          title="Image Location"
+        />
+      </MapView>
+    </View>
   );
 }
 

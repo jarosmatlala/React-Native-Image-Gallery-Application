@@ -7,8 +7,6 @@ const CameraPicker = ({ onImageCapture }) => {
 
   const captureImage = async () => {
 
-
-
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Camera permission is required!');
@@ -28,20 +26,22 @@ const CameraPicker = ({ onImageCapture }) => {
     });
 
     if (!result.canceled) {
+      const uri = result.assets[0].uri;
+
       console.log('Image captured:', result.assets[0].uri);
 
+try{
       const asset = await MediaLibrary.createAssetAsync(uri);
-
-
-      const uri = result.assets[0].uri;
       const location  = asset.location ? asset.location : null;
 
       onImageCapture({
-         uri,
-         location,
+        uri:asset.uri,
+  location:location,
          });
          console.log('Image saved to media library:', uri);
-
+        } catch (error) {
+          Alert.alert('Error saving image', error.message);
+        }
     } else {
       console.log('Camera was canceled or no image was captured.');
     }
