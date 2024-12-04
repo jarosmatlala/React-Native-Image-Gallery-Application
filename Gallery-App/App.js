@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import CameraPicker from './components/CameraPicker';
 import SavedImageDisplay from './components/SavedImageDisplay';
 import MapsLibrary from './components/MapsLibrary';
+import MapView from "react-native-maps";
 
 export default function App() {
 

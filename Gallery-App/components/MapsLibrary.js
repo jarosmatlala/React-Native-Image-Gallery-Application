@@ -1,5 +1,8 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
+import MapView from "react-native-maps";
+
+
 
 export default function MapsLibrary() {
   return (
@@ -17,8 +20,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     map: {
-      width: Dimensions.get("window"),width,
-      height: Dimensions.get("window").height
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height,
     },
 
   },

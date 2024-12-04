@@ -18,7 +18,15 @@ const CameraPicker = ({ onImageCapture }) => {
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
-      onImageCapture(uri); 
+    
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      const { location } = asset;
+      
+      if (location) {
+        onImageCapture({ uri, location });
+      } else {
+        Alert.alert('No location metadata found for this image.');
+      }
     }
   };
 

@@ -13,9 +13,21 @@ const SavedImageDisplay = ({ imageUri, filePath }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginTop: 20 },
-  image: { width: 200, height: 200, borderRadius: 10, marginBottom: 10 },
-  pathText: { fontSize: 12, color: 'gray', textAlign: 'center' },
+  container: {
+    alignItems: 'center',
+    marginTop: 20
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10
+  },
+  pathText: {
+    fontSize: 12,
+    color: 'gray',
+    textAlign: 'center'
+  },
 });
 
 export default SavedImageDisplay;
