@@ -46,9 +46,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    color: 'white',
+    color: 'black',
     margin: 10,
     fontSize: 18,
+    marginTop:50
   },
   map: {
     width: Dimensions.get("window").width,

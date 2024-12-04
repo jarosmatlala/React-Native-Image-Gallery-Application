@@ -110,6 +110,7 @@ export default function App() {
       <Text style={styles.title}>React Native Image Picker</Text>
       <CameraPicker onImageCapture={handleImageCapture} />
       <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
+      
       {location ? (
         <MapsLibrary location={location} />
 
@@ -137,10 +138,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
+    marginBottom:40
   },
   title: {
+    marginTop:150,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
   },
 });
