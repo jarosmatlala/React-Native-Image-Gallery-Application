@@ -7,6 +7,9 @@ import SavedImageDisplay from './components/SavedImageDisplay';
 import MapsLibrary from './components/MapsLibrary';
 import ImageList from './components/ImageList';
 import * as Location from 'expo-location';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ImageGallery from './components/ImageGallery'; 
 
 
 export default function App() {

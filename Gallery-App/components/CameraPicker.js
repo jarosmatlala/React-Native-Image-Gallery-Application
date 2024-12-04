@@ -71,6 +71,7 @@ const CameraPicker = ({ onImageCapture }) => {
     }
   };
 
+  const Stack = createNativeStackNavigator();
 
   return (
     <ScrollView style={styles.scrollView}
@@ -101,10 +102,20 @@ const styles = StyleSheet.create({
   },
   capturedImage: {
     width: 300, 
-    height: 300, 
+    height: 350, 
     marginTop: 20, 
+    marginBottom: 50, 
+
     borderRadius: 10, 
   },
+  mapPlaceholder: {
+    width: "100%",
+    height: 300,
+    backgroundColor: "#e0e0e0", 
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
 });
 
 export default CameraPicker;
