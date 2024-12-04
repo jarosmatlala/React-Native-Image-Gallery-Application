@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-
+import * as MediaLibrary from 'expo-media-library';
 
 const CameraPicker = ({ onImageCapture }) => {
   const captureImage = async () => {
@@ -18,15 +18,11 @@ const CameraPicker = ({ onImageCapture }) => {
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
-    
       const asset = await MediaLibrary.createAssetAsync(uri);
-      const { location } = asset;
+      const location  = asset.location ? asset.location : nill;
+
+      onImageCapture({ uri, location });
       
-      if (location) {
-        onImageCapture({ uri, location });
-      } else {
-        Alert.alert('No location metadata found for this image.');
-      }
     }
   };
 
