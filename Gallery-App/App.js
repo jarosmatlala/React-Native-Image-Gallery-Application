@@ -134,9 +134,8 @@ const HomeScreen = ({ navigation }) => {
         )}
 
        
-
           <Button
-           title="Next"
+           title="Gallery"
             onPress={navigateToNextScreen} 
             color="#841584" />
       </View>

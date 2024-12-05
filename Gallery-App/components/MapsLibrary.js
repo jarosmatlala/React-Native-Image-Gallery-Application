@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     margin: 10,
+    color:"black",
     fontSize: 18,
+    marginTop:50
   },
   map: {
     width: Dimensions.get("window").width,
