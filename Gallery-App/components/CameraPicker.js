@@ -14,9 +14,16 @@ const CameraPicker = ({ onImageCapture }) => {
       Alert.alert('Permission to access location was denied');
       return false;
     }
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+    console.log('Background location permission status:', backgroundStatus);
+  
+    if (backgroundStatus !== 'granted') {
+      Alert.alert('Permission Denied', 'Background location permission was denied');
+      return false;
+    }
     return true;
   };
-  
+
   const captureImage = async () => {
 
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();

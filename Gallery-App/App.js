@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button,Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import CameraPicker from './components/CameraPicker';
@@ -20,10 +20,18 @@ export default function App() {
 
   const requestLocationPermission = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
+    console.log('Location permission status:', status); 
     if (status !== 'granted') {
       Alert.alert('Permission Denied', 'Permission to access location was denied');
       return false;
     }
+
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+    if (backgroundStatus !== 'granted') {
+      Alert.alert('Permission Denied', 'Background location permission was denied');
+      return false;
+    }
+
     return true;
   };
 
@@ -54,11 +62,17 @@ export default function App() {
 
       const currentLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
+        timeout: 10000,
       });
+
+      if (!currentLocation || !currentLocation.coords) {
+        Alert.alert('Error', 'Unable to fetch location');
+        return;
+      }
+
       console.log('Captured Location:', currentLocation.coords);
-
+      const timestamp = new Date().toISOString();
       const { uri } = imageData;
-
       const savedPath = await saveImageToFileSystem(uri);
 
       const newImage = {
@@ -67,6 +81,7 @@ export default function App() {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         },
+        timestamp,
       };
 
       console.log('New Image Saved:', newImage);
@@ -79,9 +94,10 @@ export default function App() {
 
       setImageUri(savedPath);
       setFilePath(savedPath);
-      setLocation(location);
+      setLocation(currentLocation.coords);
     } catch (error) {
       console.error('Failed to save image:', error);
+      Alert.alert('Error', error.message);
     }
   };
 
