@@ -9,6 +9,7 @@ import ImageList from "./components/ImageList";
 import * as Location from "expo-location";
 import { NavigationContainer } from '@react-navigation/native'; 
 import { createStackNavigator } from '@react-navigation/stack';
+import { initializeDatabase, getImages, addImage } from './database';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,22 @@ const HomeScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
   const [showAllImages, setShowAllImages] = useState(false);
+
+
+  useEffect(() => {
+     const setupDatabase = async () => {
+       await initializeDatabase();
+        fetchSavedImages();
+       }; 
+       setupDatabase(); 
+      }, []);
+
+    const fetchSavedImages = () => { 
+      getImages(images => {
+         setSavedImages(images); 
+        });
+       };
+
 
   const requestLocationPermission = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -93,12 +110,12 @@ const HomeScreen = ({ navigation }) => {
 
       console.log("New Image Saved:", newImage);
 
-      setSavedImages((prevImages) => {
-        const updatedImages = [...prevImages, newImage];
-        console.log("Updated Saved Images:", updatedImages);
-        return updatedImages;
-      });
+    
 
+      setSavedImages((prevImages) => [...prevImages,newImage] );
+
+      await addImage(savedPath, newImage.location, timestamp);
+      
       setImageUri(savedPath);
       setFilePath(savedPath);
       setLocation(currentLocation.coords);
@@ -132,8 +149,7 @@ const HomeScreen = ({ navigation }) => {
         ) : (
           <Text>No location data available.</Text>
         )}
-
-       
+     
           <Button
            title="Gallery"
             onPress={navigateToNextScreen} 
@@ -160,7 +176,14 @@ const AllImagesScreen = ({ route }) => {
             ); 
           };
 
-  export default function App(){
+          export default function App() {
+             useEffect(() => {
+               const setupDatabase = async () => { 
+                await initializeDatabase();
+               }; setupDatabase();
+               },
+                []); 
+
     return(
       <NavigationContainer>
         <Stack.Navigator intialRouteName="Home"> 

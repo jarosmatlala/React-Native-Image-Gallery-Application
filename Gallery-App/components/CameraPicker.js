@@ -52,12 +52,15 @@ const CameraPicker = ({ onImageCapture }) => {
 try{
       const asset = await MediaLibrary.createAssetAsync(uri);
       const location  = asset.location ? asset.location : null;
+      onImageCapture({ uri: asset.uri, location: location });
+    
+  //     onImageCapture({
+  //       uri:asset.uri,
+  // location:location,
+  //        });
 
-      onImageCapture({
-        uri:asset.uri,
-  location:location,
-         });
-         console.log('Image saved to media library:', uri);
+         addImage(asset.uri, location);
+         console.log('Image saved to media library and database:', uri);
         } catch (error) {
           Alert.alert('Error saving image', error.message);
         }

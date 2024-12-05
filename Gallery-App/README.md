@@ -1,4 +1,3 @@
-# React-Native-Image-Gallery-Application
 # Audio Recorder App
 
 - Welcome to the Audio Recorder App! This application allows users to record audio, playback recordings, edit recording titles, and send messages via email. Users can also search for specific recordings using a search bar. This README provides instructions on how to set up and use the app. 
