@@ -6,6 +6,8 @@ import CameraPicker from './components/CameraPicker';
 import SavedImageDisplay from './components/SavedImageDisplay';
 import MapsLibrary from './components/MapsLibrary';
 import ImageList from './components/ImageList';
+import * as Location from 'expo-location';
+
 
 export default function App() {
 
@@ -13,8 +15,18 @@ export default function App() {
   const [filePath, setFilePath] = useState(null);
   const [location, setLocation] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
-  const [showAllImages, setShowAllImages] = useState(false); 
-  
+  const [showAllImages, setShowAllImages] = useState(false);
+
+
+  const requestLocationPermission = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Permission to access location was denied');
+      return false;
+    }
+    return true;
+  };
+
 
   const saveImageToFileSystem = async (imageUri) => {
     try {
@@ -35,19 +47,33 @@ export default function App() {
   };
 
   const handleImageCapture = async (imageData) => {
-      const {uri,location} = imageData;
-      console.log('Captured Image Data:',uri, location);
 
+    try {
+      const hasLocationPermission = await requestLocationPermission();
+      if (!hasLocationPermission) return;
 
-      try {
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      console.log('Captured Location:', currentLocation.coords);
+
+      const { uri } = imageData;
+
       const savedPath = await saveImageToFileSystem(uri);
-      const newImage = { uri: savedPath, location };
-      console.log('New Image Saved:', newImage); 
 
+      const newImage = {
+        uri: savedPath,
+        location: {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        },
+      };
+
+      console.log('New Image Saved:', newImage);
 
       setSavedImages((prevImages) => {
         const updatedImages = [...prevImages, newImage];
-        console.log('Updated Saved Images:', updatedImages); 
+        console.log('Updated Saved Images:', updatedImages);
         return updatedImages;
       });
 
@@ -68,16 +94,16 @@ export default function App() {
       <Text style={styles.title}>React Native Image Picker</Text>
       <CameraPicker onImageCapture={handleImageCapture} />
       <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
-      {location ?(
-        <MapsLibrary location={location} /> 
+      {location ? (
+        <MapsLibrary location={location} />
 
       ) : (
-         <Text>No location data available.</Text> 
-         )}
+        <Text>No location data available.</Text>
+      )}
 
       <Button
         title={showAllImages ? "Hide All Images" : "View All Images with Locations"}
-        onPress={toggleImageVisibility} 
+        onPress={toggleImageVisibility}
       />
       {showAllImages && savedImages.length > 0 ? (
         <ImageList images={savedImages} />
@@ -85,7 +111,7 @@ export default function App() {
         savedImages.length === 0 && <Text>No images available.</Text>
       )}
 
-      </View>
+    </View>
   );
 }
 

@@ -2,9 +2,21 @@ import React from 'react';
 import { Button, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
+
+
 
 const CameraPicker = ({ onImageCapture }) => {
 
+  const requestLocationPermission = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission to access location was denied');
+      return false;
+    }
+    return true;
+  };
+  
   const captureImage = async () => {
 
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
