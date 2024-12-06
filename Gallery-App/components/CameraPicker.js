@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Alert } from 'react-native';
+import { Button, Alert,StyleSheet,TouchableOpacity,Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 const CameraPicker = ({ onImageCapture }) => {
@@ -54,12 +54,8 @@ try{
       const location  = asset.location ? asset.location : null;
       onImageCapture({ uri: asset.uri, location: location });
     
-  //     onImageCapture({
-  //       uri:asset.uri,
-  // location:location,
-  //        });
+      onImageCapture({ uri:asset.uri  });
 
-         addImage(asset.uri, location);
          console.log('Image saved to media library and database:', uri);
         } catch (error) {
           Alert.alert('Error saving image', error.message);
@@ -71,7 +67,28 @@ try{
     
   };
 
-  return <Button title="Capture Image" onPress={captureImage} />;
-};
+  return (
+     <TouchableOpacity style={styles.button} onPress={captureImage}>
+       <Icon name="camera-alt" size={24} color="#fff" />
+        <Text style={styles.buttonText}>Capture Image</Text> 
+        </TouchableOpacity> );
+        
+      };
+
+      const styles = StyleSheet.create({ 
+        button: { 
+          flexDirection: 'row',
+          backgroundColor: "#007bff",
+         padding: 10, 
+         borderRadius: 5, 
+         alignItems: 'center', 
+         marginBottom: 10,
+         },
+         buttonText: { 
+          color: "#fff", 
+          fontSize: 18, 
+          marginLeft: 10, 
+        }, 
+      });
 
 export default CameraPicker;

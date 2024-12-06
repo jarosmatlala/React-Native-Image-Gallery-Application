@@ -4,12 +4,10 @@
 
 ## Features
 
-- Record audio
-- Playback recorded audio
-- Edit recording titles
-- Delete recordings 
-- Search for recordings
-- Send messages via email
+- Capture Image
+- Image Gallery
+- Maps with location
+
 
 ### Installation 
 

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, Button, Alert,TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import CameraPicker from "./components/CameraPicker";
-import SavedImageDisplay from "./components/SavedImageDisplay";
-import MapsLibrary from "./components/MapsLibrary";
-import ImageList from "./components/ImageList";
 import * as Location from "expo-location";
 import { NavigationContainer } from '@react-navigation/native'; 
 import { createStackNavigator } from '@react-navigation/stack';
 import { initializeDatabase, getImages, addImage } from './database';
+import { requestPermissions } from './utils/locationPermissions';  
+import CameraPicker from "./components/CameraPicker";
+import SavedImageDisplay from "./components/SavedImageDisplay";
+import MapsLibrary from "./components/MapsLibrary";
+import ImageList from "./components/ImageList";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const Stack = createStackNavigator();
-
 
 const HomeScreen = ({ navigation }) => {
   const [imageUri, setImageUri] = useState(null);
@@ -21,44 +23,37 @@ const HomeScreen = ({ navigation }) => {
   const [savedImages, setSavedImages] = useState([]);
   const [showAllImages, setShowAllImages] = useState(false);
 
-
   useEffect(() => {
-     const setupDatabase = async () => {
-       await initializeDatabase();
+    const setupDatabase = async () => {
+      try {
+        console.log('Initializing database...');
+        await initializeDatabase();
+        console.log('Fetching saved images...');
         fetchSavedImages();
-       }; 
-       setupDatabase(); 
-      }, []);
+      } catch (error) {
+        console.error('Error in database setup:', error);
+        Alert.alert('Database Setup Error', `Error in database setup: ${error.message}`);
+      }
+    };
+    setupDatabase();
+  }, []);
 
-    const fetchSavedImages = () => { 
-      getImages(images => {
-         setSavedImages(images); 
-        });
-       };
+  const fetchSavedImages = async () => { 
+    try {
+      if (!db) { 
+        console.error('Database not initialized');
+         Alert.alert('Database Error', 'Database not initialized'); 
+         return;
+         }
 
-
-  const requestLocationPermission = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    console.log("Location permission status:", status);
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Permission to access location was denied"
-      );
-      return false;
+      await getImages(images => {
+        setSavedImages(images);
+      });
+      console.log('Images fetched successfully');
+    } catch (error) {
+      console.error('Error fetching images:', error);
+      Alert.alert('Fetch Images Error', `Error fetching images: ${error.message}`);
     }
-
-    const { status: backgroundStatus } =
-      await Location.requestBackgroundPermissionsAsync();
-    if (backgroundStatus !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Background location permission was denied"
-      );
-      return false;
-    }
-
-    return true;
   };
 
   const saveImageToFileSystem = async (imageUri) => {
@@ -81,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleImageCapture = async (imageData) => {
     try {
-      const hasLocationPermission = await requestLocationPermission();
+      const hasLocationPermission = await requestPermissions();
       if (!hasLocationPermission) return;
 
       const currentLocation = await Location.getCurrentPositionAsync({
@@ -110,9 +105,7 @@ const HomeScreen = ({ navigation }) => {
 
       console.log("New Image Saved:", newImage);
 
-    
-
-      setSavedImages((prevImages) => [...prevImages,newImage] );
+      setSavedImages((prevImages) => [...prevImages, newImage]);
 
       await addImage(savedPath, newImage.location, timestamp);
       
@@ -125,35 +118,30 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const toggleImageVisibility = () => {
-    setShowAllImages((prevState) => !prevState);
-  };
-
-  const navigateToAllImages = () => {
-    navigation.navigate("AllImages", { savedImages });
-  };
-
   const navigateToNextScreen = () => { 
     navigation.navigate("AllImages", { savedImages });
-     };
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Gallery Application</Text>
-      <CameraPicker onImageCapture={handleImageCapture} />
-      <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
-
-      <View style={styles.mapContainer}>
-        {location ? (
-          <MapsLibrary location={location} />
-        ) : (
-          <Text>No location data available.</Text>
+       <Text style={styles.title}>Gallery Application</Text>
+        <TouchableOpacity style={styles.button} onPress={navigateToNextScreen}> 
+          <Icon name="photo-library" size={24} color="#fff" />
+           <Text style={styles.buttonText}>Gallery</Text>
+            </TouchableOpacity>
+             <CameraPicker onImageCapture={handleImageCapture} /> 
+             <SavedImageDisplay imageUri={imageUri} filePath={filePath} />
+              <View style={styles.mapContainer}>
+                 {location ? ( 
+                  <MapsLibrary location={location} /> 
+                ) : (
+                   <Text>No location data available.</Text>
         )}
-     
-          <Button
+        <Button
            title="Gallery"
             onPress={navigateToNextScreen} 
-            color="#841584" />
+            color="#841584" 
+        />
       </View>
     </View>
   );
@@ -163,37 +151,45 @@ const AllImagesScreen = ({ route }) => {
   const { savedImages } = route.params;
 
   return ( 
-  <View style={styles.container}>
-     <ImageList images={savedImages} /> 
-     </View> ); 
-     };
+    <View style={styles.container}>
+      <ImageList images={savedImages} />
+    </View>
+  ); 
+};
 
-     const NextScreen = () => {
-       return (
-         <View style={styles.container}>
-           <Text style={styles.title}>Hello</Text>
-            </View> 
-            ); 
-          };
+const NextScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Hello</Text>
+    </View>
+  ); 
+};
 
-          export default function App() {
-             useEffect(() => {
-               const setupDatabase = async () => { 
-                await initializeDatabase();
-               }; setupDatabase();
-               },
-                []); 
+export default function App() {
+  useEffect(() => { 
+    const setupDatabase = async () => { 
+      try {
+         await initializeDatabase();
+         console.log('Database initialized successfully'); 
+        } catch (error) { 
+          console.error('Error in database setup:', error);
+         Alert.alert('Database Setup Error', `Error in database setup: ${error.message}`);
+         } 
+        }; 
+        setupDatabase();
+       }, 
+       []);
 
-    return(
-      <NavigationContainer>
-        <Stack.Navigator intialRouteName="Home"> 
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
-         <Stack.Screen name="AllImages" component={AllImagesScreen} />
-          <Stack.Screen name="NextScreen" component={ImageList} />
-          </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }        
+        <Stack.Screen name="AllImages" component={AllImagesScreen} />
+        <Stack.Screen name="NextScreen" component={ImageList} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -204,7 +200,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
@@ -219,4 +215,17 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     width: "80%",
   },
+   button: {
+     flexDirection: 'row', 
+     backgroundColor: "#841584", 
+     padding: 10, 
+     borderRadius: 5, 
+     alignItems: 'center',
+      marginBottom: 10,
+     }, 
+     buttonText: { 
+      color: "#fff",
+       fontSize: 18, 
+       marginLeft: 10, 
+      }
 });
