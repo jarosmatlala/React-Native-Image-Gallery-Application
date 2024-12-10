@@ -20,7 +20,7 @@ https://github.com/jarosmatlala/React-Native-Image-Gallery-Application.git
 2. **Change Directory:**
 
 ```bash
-cd React-Native-Image-Gallery-Application
+cd React-Native-Image-Gallery-Application/Gallery-App
 ``` 
 
 2.1 ** Open Code**
@@ -29,14 +29,6 @@ cd React-Native-Image-Gallery-Application
 ```bash
 code .
 ```
-
-2.2 ** Change to the actual project Repo**
-
-
-```bash
-cd Gallery-App
-```
-
 
 3. **Change branch to Dev:**
 ```
