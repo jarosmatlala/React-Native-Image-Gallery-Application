@@ -30,6 +30,12 @@ cd React-Native-Image-Gallery-Application/Gallery-App
 code .
 ```
 
+2.2 ** Change to the actual project directory 
+
+```bash 
+cd Gallery-App
+```
+
 3. **Change branch to Dev:**
 ```
 git checkout Dev
