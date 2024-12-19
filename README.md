@@ -32,8 +32,16 @@ code .
 ```
 
 3. **Change branch to Dev:**
+
+3.1
 ```
 git checkout Dev
+```
+
+3.2 ** cd to the actual project directory 
+
+```bash
+cd Gallery-App
 ```
 
 4. **Install Dependencies:**
